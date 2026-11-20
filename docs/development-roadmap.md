@@ -2,7 +2,7 @@
 
 ## Current phase
 
-Phase 1 — Project foundation (almost done)
+Phase 1 — Project foundation (complete)
 
 ## Completed
 
@@ -16,7 +16,7 @@ Phase 1 — Project foundation (almost done)
 
 ## Next up
 
-- [ ] Proper README.md
+- [x] Proper README.md
 - [ ] Confirm MVP scope and ERT departments
 - [ ] Phase 2: design system (Button, Card, Badge, ProgressBar, Input, Modal)
 - [ ] Phase 2: Sidebar, Topbar, workspace layout, mobile navigation

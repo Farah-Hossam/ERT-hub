@@ -1,14 +1,19 @@
-import { cn } from "@/lib/utils";
+import { Card } from "@/components/ui/Card";
+import { ProgressBar } from "@/components/ui/ProgressBar";
+
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center gap-4">
-      <h1 className="text-4xl font-bold text-brand">ERT Hub</h1>
-      <p className="text-muted">Engineering Operations Workspace</p>
-      <div className="rounded-xl border border-border bg-surface p-6">
-        <button className={cn("rounded-lg bg-brand px-4 py-2 font-semibold text-white", "hover:bg-brand-dark")}>
-        Test button
-        </button>
-      </div>
+    <main className="mx-auto flex min-h-screen max-w-2xl flex-col gap-6 p-8">
+      <h1 className="text-3xl font-bold text-brand">ERT Hub</h1>
+
+      <Card className="flex flex-col gap-5">
+        <ProgressBar value={20} label="Steering column design" />
+        <ProgressBar value={60} label="Chassis welding" variant="warning" />
+        <ProgressBar value={100} label="Brake test report" variant="success" />
+        <ProgressBar value={35} label="Late: battery pack" variant="danger" />
+        <ProgressBar value={140} label="Bad data (clamped to 100)" />
+        <ProgressBar value={45} showPercentage={false} />
+      </Card>
     </main>
   );
 }
