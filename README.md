@@ -1,36 +1,58 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ERT Hub
 
-## Getting Started
+Engineering operations workspace for the EJUST Racing Team (ERT).
 
-First, run the development server:
+ERT Hub gives the team one place to manage tasks, projects, events, weekly
+reports, and deliverables, so Operations can see who is doing what, what is
+overdue, and what is blocked.
+
+## Status
+
+In development. Currently in Phase 1 (project foundation).
+See [docs/development-roadmap.md](docs/development-roadmap.md).
+
+## MVP features
+
+- Login and role-based access
+- Task management (assign, deadlines, status, progress)
+- Dashboard
+- Weekly reports
+- Calendar
+- Events
+
+## Tech stack
+
+- Next.js (App Router) and TypeScript
+- Tailwind CSS
+- Supabase (database, authentication, file storage), planned
+- Deployed as an installable web app (PWA), planned
+
+## Getting started
+
+Requirements: Node.js (LTS) and Git.
 
 ```bash
+git clone https://github.com/Farah-Hossam/ERT-hub.git
+cd ERT-hub
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Then open http://localhost:3000.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+docs/    Requirements, architecture, roadmap
+src/
+  app/         Pages and layouts
+  components/  Reusable UI components
+  features/    Tasks, projects, reports, and other features
+  lib/         Shared utilities
+  config/      Theme, navigation, constants
+```
 
-## Learn More
+## Documentation
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- [Product requirements](docs/product-requirements.md)
+- [Development roadmap](docs/development-roadmap.md)
