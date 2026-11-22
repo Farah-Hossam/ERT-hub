@@ -57,16 +57,23 @@ and which reports are missing.
 - Fast and simple to use
 - Easy to maintain as the team grows
 
-## 7. MVP (proposed, to confirm)
+## 7. MVP (confirmed)
 
 - Login
 - Tasks (create, assign, status, progress, deadlines)
 - Basic dashboard
 - Weekly reports
+- Calendar (task deadlines and events)
+- Events
+
+## 7b. Departments (for now)
+
+- Technical
+- Non-technical
+  (More departments or sub-teams can be added later.)
 
 ## 8. Future Features
 
-- Calendar, events, announcements
 - Google Drive integration
 - Push and email notifications
 - Weighted project progress
@@ -75,3 +82,12 @@ and which reports are missing.
 
 - Operations can see overdue and blocked work in under 10 seconds
 - Most members submit weekly reports through the app
+
+## Decisions (confirmed)
+
+- MVP: login, tasks, dashboard, weekly reports, calendar, events
+- Departments for now: Technical, Non-technical
+
+## Open questions
+
+- None right now

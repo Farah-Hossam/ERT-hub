@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { MobileNavigation } from "./MobileNavigation";
 import { Sidebar } from "./Sidebar";
 import { Topbar } from "./Topbar";
 
@@ -8,8 +9,9 @@ export function WorkspaceLayout({ children }: { children: ReactNode }) {
       <Sidebar />
       <div className="flex min-w-0 flex-1 flex-col">
         <Topbar />
-        <main className="flex-1 p-6">{children}</main>
+        <main className="flex-1 p-4 pb-24 md:p-6 md:pb-6">{children}</main>
       </div>
+      <MobileNavigation />
     </div>
   );
 }
