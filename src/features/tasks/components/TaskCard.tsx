@@ -7,13 +7,30 @@ import { ProgressBar } from "@/components/ui/ProgressBar";
 import type { Task } from "../types/task.types";
 import { formatDueDate, formatTaskId, isOverdue } from "../utils";
 
-export function TaskCard({ task }: { task: Task }) {
+interface TaskCardProps {
+  task: Task;
+  onOpen?: () => void;
+}
+
+export function TaskCard({ task, onOpen }: TaskCardProps) {
   const overdue = isOverdue(task);
   const progressVariant =
     task.status === "completed" ? "success" : overdue ? "danger" : "brand";
 
   return (
-    <Card className="flex flex-col gap-4">
+    <Card
+      interactive={!!onOpen}
+      role={onOpen ? "button" : undefined}
+      tabIndex={onOpen ? 0 : undefined}
+      onClick={onOpen}
+      onKeyDown={(e) => {
+        if (onOpen && (e.key === "Enter" || e.key === " ")) {
+          e.preventDefault();
+          onOpen();
+        }
+      }}
+      className="flex flex-col gap-4"
+    >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="text-xs text-muted">{formatTaskId(task.task_number)}</p>

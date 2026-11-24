@@ -1,8 +1,12 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { createTask, getTasks } from "../services/taskService";
-import type { Task, TaskFormData } from "../types/task.types";
+import {
+  createTask,
+  getTasks,
+  updateTaskProgress,
+} from "../services/taskService";
+import type { Task, TaskFormData, TaskStatus } from "../types/task.types";
 
 export function useTasks() {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -32,5 +36,13 @@ export function useTasks() {
     [refresh]
   );
 
-  return { tasks, loading, error, refresh, addTask };
+  const changeTask = useCallback(
+    async (id: string, changes: { status: TaskStatus; progress: number }) => {
+      await updateTaskProgress(id, changes);
+      await refresh();
+    },
+    [refresh]
+  );
+
+  return { tasks, loading, error, refresh, addTask, changeTask };
 }

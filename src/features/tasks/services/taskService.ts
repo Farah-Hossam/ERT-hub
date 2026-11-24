@@ -1,5 +1,10 @@
 import { createClient } from "@/lib/supabase/client";
-import type { Task, TaskFormData, TaskMember } from "../types/task.types";
+import type {
+  Task,
+  TaskFormData,
+  TaskMember,
+  TaskStatus,
+} from "../types/task.types";
 
 // Fetch each task together with its assignee's name
 const TASK_SELECT = "*, assignee:profiles!assignee_id(id, full_name)";
@@ -28,6 +33,25 @@ export async function createTask(input: TaskFormData): Promise<void> {
   });
 
   if (error) throw new Error(error.message);
+}
+
+export async function updateTaskProgress(
+  id: string,
+  changes: { status: TaskStatus; progress: number }
+): Promise<void> {
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("tasks")
+    .update({ status: changes.status, progress: changes.progress })
+    .eq("id", id)
+    .select("id");
+
+  if (error) throw new Error(error.message);
+  // When the security rules block an update, Supabase returns no rows
+  // instead of an error, so we check for that ourselves.
+  if (!data || data.length === 0) {
+    throw new Error("You don't have permission to change this task");
+  }
 }
 
 export async function getAssignableMembers(): Promise<TaskMember[]> {

@@ -11,16 +11,24 @@ export type BadgeVariant =
   | "danger"
   | "info";
 
+// autoProgress: the progress a task jumps to when it is moved to this status.
+// null means "keep the current progress" (a blocked task stays where it is).
+// Change these numbers to match how ERT wants to measure progress.
 export const taskStatuses: Record<
   TaskStatus,
-  { label: string; description: string; variant: BadgeVariant }
+  {
+    label: string;
+    description: string;
+    variant: BadgeVariant;
+    autoProgress: number | null;
+  }
 > = {
-  backlog: { label: "Backlog", description: "Not yet planned for execution", variant: "neutral" },
-  todo: { label: "To Do", description: "Ready to be started", variant: "neutral" },
-  in_progress: { label: "In Progress", description: "Currently being worked on", variant: "info" },
-  under_review: { label: "Under Review", description: "Awaiting review", variant: "warning" },
-  completed: { label: "Completed", description: "Finished", variant: "success" },
-  blocked: { label: "Blocked", description: "Cannot proceed", variant: "danger" },
+  backlog: { label: "Backlog", description: "Not yet planned for execution", variant: "neutral", autoProgress: 0 },
+  todo: { label: "To Do", description: "Ready to be started", variant: "neutral", autoProgress: 0 },
+  in_progress: { label: "In Progress", description: "Currently being worked on", variant: "info", autoProgress: 50 },
+  under_review: { label: "Under Review", description: "Awaiting review", variant: "warning", autoProgress: 90 },
+  completed: { label: "Completed", description: "Finished", variant: "success", autoProgress: 100 },
+  blocked: { label: "Blocked", description: "Cannot proceed", variant: "danger", autoProgress: null },
 };
 
 export const taskPriorities: Record<
