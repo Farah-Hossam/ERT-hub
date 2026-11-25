@@ -49,10 +49,12 @@ export function CalendarView({ items }: { items: CalendarItem[] }) {
   const [showTasks, setShowTasks] = useState(true);
   const [showEvents, setShowEvents] = useState(true);
 
-  useEffect(() => {
+    useEffect(() => {
+    /* eslint-disable react-hooks/set-state-in-effect */
     const now = new Date();
     setMonthStart(new Date(now.getFullYear(), now.getMonth(), 1));
     setSelectedKey(toDateKey(now));
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, []);
 
   const itemsByDate = useMemo(

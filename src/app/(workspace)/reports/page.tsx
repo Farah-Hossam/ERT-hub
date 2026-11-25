@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { Suspense, useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight, FilePenLine } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -31,7 +31,7 @@ import {
   manageableTeams,
 } from "@/lib/access";
 
-export default function ReportsPage() {
+function ReportsContent() {
   const { profile, memberships } = useCurrentUser();
   const { teams } = useTeams();
   const { reports, loading, error, save, review } = useReports();
@@ -248,5 +248,12 @@ export default function ReportsPage() {
         )}
       </Modal>
     </div>
+  );
+}
+export default function ReportsPage() {
+  return (
+    <Suspense fallback={<p className="text-sm text-muted">Loading...</p>}>
+      <ReportsContent />
+    </Suspense>
   );
 }
