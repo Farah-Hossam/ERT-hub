@@ -27,8 +27,7 @@ import {
 } from "@/lib/access";
 
 export default function TasksPage() {
-  const { tasks, loading, error, addTask, changeTask } = useTasks();
-  const { profile, memberships } = useCurrentUser();
+  const { tasks, loading, error, addTask, changeTask, removeTask } = useTasks();  const { profile, memberships } = useCurrentUser();
   const { teams } = useTeams();
   const { filters, setFilter, reset, filtered, isFiltering } = useTaskFilters(tasks);
   const [view, setView] = useState<TaskView>("cards");
@@ -161,6 +160,11 @@ export default function TasksPage() {
             key={selected.id}
             task={selected}
             canEdit={canEditSelected}
+            canDelete={isAdminOrOperations(profile)}
+            onDelete={async () => {
+              await removeTask(selected.id);
+              setSelectedId(null);
+            }}
             onClose={() => setSelectedId(null)}
             onSave={async (changes) => {
               await changeTask(selected.id, changes);

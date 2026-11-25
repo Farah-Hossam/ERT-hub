@@ -23,15 +23,18 @@ interface TaskDetailsProps {
   task: Task;
   canEdit: boolean;
   onSave: (changes: { status: TaskStatus; progress: number }) => Promise<void>;
-  onClose: () => void;
+    onClose: () => void;
+  canDelete?: boolean;
+  onDelete?: () => Promise<void>;
 }
 
-export function TaskDetails({ task, canEdit, onSave, onClose }: TaskDetailsProps) {
+export function TaskDetails({ task, canEdit, onSave, onClose, canDelete, onDelete }: TaskDetailsProps) {
   const [status, setStatus] = useState<TaskStatus>(task.status);
   const [progress, setProgress] = useState(task.progress);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const changed = status !== task.status || progress !== task.progress;
   const overdue = isOverdue(task);
 
@@ -53,7 +56,18 @@ export function TaskDetails({ task, canEdit, onSave, onClose }: TaskDetailsProps
       setSaving(false);
     }
   }
-
+  async function handleDelete() {
+    if (!onDelete) return;
+    setError(null);
+    setDeleting(true);
+    try {
+      await onDelete();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Could not delete the task");
+      setDeleting(false);
+      setConfirmingDelete(false);
+    }
+  }
   return (
     <div className="flex flex-col gap-5">
       <div>
@@ -108,17 +122,55 @@ export function TaskDetails({ task, canEdit, onSave, onClose }: TaskDetailsProps
         </div>
       )}
 
-      {error && <p className="text-sm text-red-600">{error}</p>}
+            {error && <p className="text-sm text-red-600">{error}</p>}
 
-      <div className="flex justify-end gap-2">
-        <Button variant="outline" onClick={onClose}>
-          {canEdit ? "Cancel" : "Close"}
-        </Button>
-        {canEdit && (
-          <Button onClick={handleSave} loading={saving} disabled={!changed}>
-            Save changes
+      {confirmingDelete && (
+        <div className="flex flex-col gap-3 rounded-lg border border-red-300 p-4">
+          <p className="text-sm">
+            Delete this task permanently? This cannot be undone.
+          </p>
+          <div className="flex justify-end gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setConfirmingDelete(false)}
+              disabled={deleting}
+            >
+              Keep task
+            </Button>
+            <button
+              type="button"
+              onClick={handleDelete}
+              disabled={deleting}
+              className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-60"
+            >
+              {deleting ? "Deleting..." : "Yes, delete"}
+            </button>
+          </div>
+        </div>
+      )}
+
+      <div className="flex items-center justify-between gap-2">
+        <div>
+          {canDelete && onDelete && !confirmingDelete && (
+            <button
+              type="button"
+              onClick={() => setConfirmingDelete(true)}
+              className="text-sm font-medium text-red-600 hover:underline"
+            >
+              Delete task
+            </button>
+          )}
+        </div>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={onClose}>
+            {canEdit ? "Cancel" : "Close"}
           </Button>
-        )}
+          {canEdit && (
+            <Button onClick={handleSave} loading={saving} disabled={!changed}>
+              Save changes
+            </Button>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import {
   createTask,
+  deleteTask,
   getTasks,
   updateTaskProgress,
 } from "../services/taskService";
@@ -44,6 +45,12 @@ export function useTasks() {
     },
     [refresh]
   );
-
-  return { tasks, loading, error, refresh, addTask, changeTask };
+  const removeTask = useCallback(
+    async (id: string) => {
+      await deleteTask(id);
+      await refresh();
+    },
+    [refresh]
+  );
+  return { tasks, loading, error, refresh, addTask, changeTask, removeTask };
 }

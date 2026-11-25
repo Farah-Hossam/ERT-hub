@@ -79,3 +79,17 @@ export async function getAssignableMembers(): Promise<TaskMember[]> {
     team_ids: (row.memberships ?? []).map((m) => m.team_id),
   }));
 }
+export async function deleteTask(id: string): Promise<void> {
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("tasks")
+    .delete()
+    .eq("id", id)
+    .select("id");
+
+  if (error) throw new Error(error.message);
+  // Blocked deletes return no rows instead of an error
+  if (!data || data.length === 0) {
+    throw new Error("You don't have permission to delete this task");
+  }
+}
