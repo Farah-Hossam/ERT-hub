@@ -40,7 +40,7 @@ export function getStats(
     ];
   }
 
-  const mine = tasks.filter((t) => t.assignee_id === userId);
+  const mine = tasks.filter((t) => t.assignees.some((a) => a.id === userId));
   return [
     { label: "My open tasks", value: mine.filter((t) => t.status !== "completed").length, tone: "neutral" },
     { label: "Completed", value: mine.filter((t) => t.status === "completed").length, tone: "success" },

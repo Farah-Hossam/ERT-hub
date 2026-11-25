@@ -17,7 +17,7 @@ const emptyForm: TaskFormData = {
   title: "",
   description: "",
   priority: "medium",
-  assignee_id: "",
+  assignee_ids: [],
   team_id: "",
   start_date: "",
   due_date: "",
@@ -72,26 +72,29 @@ export function TaskForm({
 
   // Picking a team narrows the assignee list to that team's members
   function handleTeamChange(teamId: string) {
-    setForm((prev) => {
-      const assigneeStillFits =
-        !teamId ||
-        !!members.find((m) => m.id === prev.assignee_id)?.team_ids.includes(teamId);
-      return {
-        ...prev,
-        team_id: teamId,
-        assignee_id: assigneeStillFits ? prev.assignee_id : "",
-      };
-    });
+    setForm((prev) => ({
+      ...prev,
+      team_id: teamId,
+      assignee_ids: teamId
+        ? prev.assignee_ids.filter((id) =>
+            members.find((m) => m.id === id)?.team_ids.includes(teamId)
+          )
+        : prev.assignee_ids,
+    }));
+  }
+
+  function toggleAssignee(id: string) {
+    setForm((prev) => ({
+      ...prev,
+      assignee_ids: prev.assignee_ids.includes(id)
+        ? prev.assignee_ids.filter((x) => x !== id)
+        : [...prev.assignee_ids, id],
+    }));
   }
 
   const shownMembers = form.team_id
     ? members.filter((m) => m.team_ids.includes(form.team_id))
     : members;
-
-  const memberOptions = shownMembers.map((m) => ({
-    value: m.id,
-    label: m.full_name || m.email || "Unnamed",
-  }));
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4" noValidate>
@@ -131,13 +134,33 @@ export function TaskForm({
         />
       </div>
 
-      <Select
-        label="Assignee"
-        placeholder="Unassigned"
-        options={memberOptions}
-        value={form.assignee_id}
-        onChange={(e) => update("assignee_id", e.target.value)}
-      />
+      <div className="flex flex-col gap-1.5">
+        <span className="text-sm font-medium">
+          Assignees
+          {form.assignee_ids.length > 0 ? ` (${form.assignee_ids.length})` : ""}
+        </span>
+        <div className="max-h-44 overflow-y-auto rounded-lg border border-border p-2">
+          {shownMembers.length === 0 ? (
+            <p className="p-2 text-sm text-muted">No members to choose from.</p>
+          ) : (
+            shownMembers.map((m) => (
+              <label
+                key={m.id}
+                className="flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-sm hover:bg-black/5"
+              >
+                <input
+                  type="checkbox"
+                  checked={form.assignee_ids.includes(m.id)}
+                  onChange={() => toggleAssignee(m.id)}
+                  className="accent-brand"
+                />
+                {m.full_name || m.email || "Unnamed"}
+              </label>
+            ))
+          )}
+        </div>
+        <p className="text-xs text-muted">Tick one or more. Leave empty for unassigned.</p>
+      </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <Input

@@ -6,8 +6,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import type { Task } from "../types/task.types";
-import { formatDueDate, formatTaskId, isOverdue } from "../utils";
-
+import { formatAssignees, formatDueDate, formatTaskId, isOverdue } from "../utils";
 interface TaskCardProps {
   task: Task;
   onOpen?: () => void;
@@ -51,9 +50,7 @@ export function TaskCard({ task, onOpen }: TaskCardProps) {
       <ProgressBar value={task.progress} variant={progressVariant} />
 
       <div className="flex items-center justify-between gap-3 text-xs text-muted">
-        <span>
-          {task.assignee ? task.assignee.full_name || "Unnamed" : "Unassigned"}
-        </span>
+        <span className="truncate">{formatAssignees(task.assignees)}</span>
         <span className="inline-flex items-center gap-1">
           <CalendarDays size={14} />
           {formatDueDate(task.due_date)}

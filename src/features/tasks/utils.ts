@@ -19,3 +19,7 @@ export function formatDueDate(date: string | null) {
     year: "numeric",
   });
 }
+export function formatAssignees(assignees: { full_name: string }[]): string {
+  if (assignees.length === 0) return "Unassigned";
+  return assignees.map((a) => a.full_name || "Unnamed").join(", ");
+}

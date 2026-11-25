@@ -15,6 +15,7 @@ export interface Task {
   description: string | null;
   status: TaskStatus;
   priority: TaskPriority;
+  // Old single-assignee fields, kept for now. They hold the first assignee.
   assignee_id: string | null;
   created_by: string;
   department_id: string | null;
@@ -25,6 +26,8 @@ export interface Task {
   created_at: string;
   updated_at: string;
   assignee: { id: string; full_name: string } | null;
+  // Everyone the task is assigned to
+  assignees: { id: string; full_name: string }[];
   team: { id: string; name: string; color: string } | null;
 }
 
@@ -33,7 +36,7 @@ export interface TaskFormData {
   title: string;
   description: string;
   priority: TaskPriority;
-  assignee_id: string;
+  assignee_ids: string[];
   team_id: string;
   start_date: string;
   due_date: string;
