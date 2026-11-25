@@ -4,6 +4,7 @@ import { useState } from "react";
 import { CalendarDays, User } from "lucide-react";
 import { PriorityBadge } from "@/components/shared/PriorityBadge";
 import { StatusBadge } from "@/components/shared/StatusBadge";
+import { TeamBadge } from "@/components/shared/TeamBadge";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { ProgressBar } from "@/components/ui/ProgressBar";
@@ -58,6 +59,7 @@ export function TaskDetails({ task, canEdit, onSave, onClose }: TaskDetailsProps
       <div>
         <h3 className="text-lg font-semibold leading-snug">{task.title}</h3>
         <div className="mt-2 flex flex-wrap items-center gap-2">
+          {task.team && <TeamBadge team={task.team} />}
           <PriorityBadge priority={task.priority} />
           {overdue && <Badge variant="danger">Overdue</Badge>}
         </div>

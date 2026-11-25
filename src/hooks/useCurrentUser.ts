@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import type { TeamMembership } from "@/features/team/types/team.types";
 import { createClient } from "@/lib/supabase/client";
 import type { Profile } from "@/types/user.types";
 
 export function useCurrentUser() {
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [memberships, setMemberships] = useState<TeamMembership[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -22,14 +24,17 @@ export function useCurrentUser() {
         return;
       }
 
-      const { data } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", user.id)
-        .single();
+      const [profileResult, membershipResult] = await Promise.all([
+        supabase.from("profiles").select("*").eq("id", user.id).single(),
+        supabase
+          .from("team_memberships")
+          .select("team_id, is_lead")
+          .eq("profile_id", user.id),
+      ]);
 
       if (!cancelled) {
-        setProfile(data as Profile | null);
+        setProfile(profileResult.data as Profile | null);
+        setMemberships((membershipResult.data ?? []) as TeamMembership[]);
         setLoading(false);
       }
     }
@@ -40,5 +45,5 @@ export function useCurrentUser() {
     };
   }, []);
 
-  return { profile, loading };
+  return { profile, memberships, loading };
 }

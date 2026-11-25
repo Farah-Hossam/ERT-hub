@@ -5,6 +5,7 @@ import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Modal } from "@/components/ui/Modal";
+import { useTeams } from "@/features/team/hooks/useTeams";
 import { TaskBoard } from "@/features/tasks/components/TaskBoard";
 import { TaskCard } from "@/features/tasks/components/TaskCard";
 import { TaskDetails } from "@/features/tasks/components/TaskDetails";
@@ -19,20 +20,28 @@ import { useTaskMembers } from "@/features/tasks/hooks/useTaskMembers";
 import { useTasks } from "@/features/tasks/hooks/useTasks";
 import { formatTaskId } from "@/features/tasks/utils";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
-
-// Matches the database rules
-const MANAGER_ROLES = ["department_head", "operations", "admin"];
+import {
+  canCreateTasks,
+  isAdminOrOperations,
+  manageableTeams,
+} from "@/lib/access";
 
 export default function TasksPage() {
   const { tasks, loading, error, addTask, changeTask } = useTasks();
-  const { profile } = useCurrentUser();
+  const { profile, memberships } = useCurrentUser();
+  const { teams } = useTeams();
   const { filters, setFilter, reset, filtered, isFiltering } = useTaskFilters(tasks);
   const [view, setView] = useState<TaskView>("cards");
   const [createOpen, setCreateOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
-  const isManager = !!profile && MANAGER_ROLES.includes(profile.role);
-  const members = useTaskMembers(isManager);
+  // Teams you can create tasks for. The database makes the same decision.
+  const creatableTeams = useMemo(
+    () => manageableTeams(profile, memberships, teams),
+    [profile, memberships, teams]
+  );
+  const canCreate = canCreateTasks(profile, memberships, teams);
+  const members = useTaskMembers(canCreate);
 
   // People who appear as assignees, for the assignee filter
   const assignees = useMemo(() => {
@@ -40,7 +49,9 @@ export default function TasksPage() {
     tasks.forEach((t) => {
       if (t.assignee) byId.set(t.assignee.id, t.assignee.full_name || "Unnamed");
     });
-    return [...byId].map(([id, name]) => ({ id, name })).sort((a, b) => a.name.localeCompare(b.name));
+    return [...byId]
+      .map(([id, name]) => ({ id, name }))
+      .sort((a, b) => a.name.localeCompare(b.name));
   }, [tasks]);
 
   // Look the task up in the list so it always shows the latest saved values
@@ -48,9 +59,11 @@ export default function TasksPage() {
   const canEditSelected =
     !!profile &&
     !!selected &&
-    (isManager ||
+    (isAdminOrOperations(profile) ||
       selected.assignee_id === profile.id ||
-      selected.created_by === profile.id);
+      selected.created_by === profile.id ||
+      (selected.team_id !== null &&
+        creatableTeams.some((t) => t.id === selected.team_id)));
 
   const countText = loading
     ? "Loading..."
@@ -67,7 +80,7 @@ export default function TasksPage() {
         </div>
         <div className="flex items-center gap-3">
           <TaskViewToggle value={view} onChange={setView} />
-          {isManager && (
+          {canCreate && (
             <Button onClick={() => setCreateOpen(true)}>
               <Plus size={16} />
               New task
@@ -82,6 +95,7 @@ export default function TasksPage() {
         reset={reset}
         isFiltering={isFiltering}
         assignees={assignees}
+        teams={teams}
       />
 
       {error && (
@@ -92,7 +106,7 @@ export default function TasksPage() {
 
       {!loading && !error && tasks.length === 0 && (
         <Card>
-          <p className="text-sm text-muted">No tasks yet.</p>
+          <p className="text-sm text-muted">No tasks to show.</p>
         </Card>
       )}
 
@@ -127,6 +141,8 @@ export default function TasksPage() {
       >
         <TaskForm
           members={members}
+          teams={creatableTeams}
+          teamRequired={!isAdminOrOperations(profile)}
           onCancel={() => setCreateOpen(false)}
           onSubmit={async (data) => {
             await addTask(data);

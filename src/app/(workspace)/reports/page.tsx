@@ -22,14 +22,18 @@ import {
   shiftWeek,
 } from "@/features/reports/utils";
 import { useTasks } from "@/features/tasks/hooks/useTasks";
+import { useTeams } from "@/features/team/hooks/useTeams";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
-
-// Matches the database rules
-const REVIEWER_ROLES = ["department_head", "operations", "admin"];
-const TEAM_VIEW_ROLES = [...REVIEWER_ROLES, "leadership"];
+import {
+  canReviewReports,
+  canViewTeamReports,
+  isTopBoard,
+  manageableTeams,
+} from "@/lib/access";
 
 export default function ReportsPage() {
-  const { profile } = useCurrentUser();
+  const { profile, memberships } = useCurrentUser();
+  const { teams } = useTeams();
   const { reports, loading, error, save, review } = useReports();
   const { tasks } = useTasks();
   const { events } = useEvents();
@@ -39,9 +43,18 @@ export default function ReportsPage() {
   const [formState, setFormState] = useState<{ report: Report | null } | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
-  const canViewTeam = !!profile && TEAM_VIEW_ROLES.includes(profile.role);
-  const canReview = !!profile && REVIEWER_ROLES.includes(profile.role);
-  const members = useActiveMembers(canViewTeam);
+  const canViewTeam = canViewTeamReports(profile, memberships);
+  const canReview = canReviewReports(profile, memberships);
+  const allMembers = useActiveMembers(canViewTeam);
+
+  // The people whose reports you oversee: everyone for the top board,
+  // otherwise the members of the teams you manage
+  const members = useMemo(() => {
+    if (!profile) return [];
+    if (isTopBoard(profile)) return allMembers;
+    const managed = new Set(manageableTeams(profile, memberships, teams).map((t) => t.id));
+    return allMembers.filter((m) => m.team_ids.some((id) => managed.has(id)));
+  }, [profile, memberships, teams, allMembers]);
 
   const thisWeek = currentWeekStart();
   const myReports = useMemo(

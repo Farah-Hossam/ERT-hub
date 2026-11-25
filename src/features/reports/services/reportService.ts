@@ -120,10 +120,22 @@ export async function getActiveMembers(): Promise<ActiveMember[]> {
   const supabase = createClient();
   const { data, error } = await supabase
     .from("profiles")
-    .select("id, full_name, email")
+    .select("id, full_name, email, memberships:team_memberships(team_id)")
     .eq("is_active", true)
     .order("full_name");
 
   if (error) throw new Error(error.message);
-  return (data ?? []) as ActiveMember[];
+
+  type Row = {
+    id: string;
+    full_name: string;
+    email: string | null;
+    memberships: { team_id: string }[] | null;
+  };
+  return ((data ?? []) as unknown as Row[]).map((row) => ({
+    id: row.id,
+    full_name: row.full_name,
+    email: row.email,
+    team_ids: (row.memberships ?? []).map((m) => m.team_id),
+  }));
 }

@@ -1,6 +1,7 @@
 import { CalendarDays } from "lucide-react";
 import { PriorityBadge } from "@/components/shared/PriorityBadge";
 import { StatusBadge } from "@/components/shared/StatusBadge";
+import { TeamBadge } from "@/components/shared/TeamBadge";
 import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 import { ProgressBar } from "@/components/ui/ProgressBar";
@@ -30,6 +31,8 @@ export function TaskCard({ task, onOpen }: TaskCardProps) {
         }
       }}
       className="flex flex-col gap-4"
+      // A colored edge shows which team the task belongs to
+      style={task.team ? { borderLeftColor: task.team.color, borderLeftWidth: 4 } : undefined}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
@@ -40,6 +43,7 @@ export function TaskCard({ task, onOpen }: TaskCardProps) {
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
+        {task.team && <TeamBadge team={task.team} />}
         <PriorityBadge priority={task.priority} />
         {overdue && <Badge variant="danger">Overdue</Badge>}
       </div>

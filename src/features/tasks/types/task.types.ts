@@ -18,12 +18,14 @@ export interface Task {
   assignee_id: string | null;
   created_by: string;
   department_id: string | null;
+  team_id: string | null;
   start_date: string | null;
   due_date: string | null;
   progress: number;
   created_at: string;
   updated_at: string;
   assignee: { id: string; full_name: string } | null;
+  team: { id: string; name: string; color: string } | null;
 }
 
 // What the "New task" form collects (all values are text from form fields)
@@ -32,6 +34,7 @@ export interface TaskFormData {
   description: string;
   priority: TaskPriority;
   assignee_id: string;
+  team_id: string;
   start_date: string;
   due_date: string;
 }
@@ -41,4 +44,5 @@ export interface TaskMember {
   id: string;
   full_name: string;
   email: string | null;
+  team_ids: string[]; // the teams this person belongs to
 }

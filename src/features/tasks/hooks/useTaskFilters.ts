@@ -9,6 +9,7 @@ export interface TaskFilterState {
   status: TaskStatus | "all";
   priority: TaskPriority | "all";
   assignee: string; // "all", "unassigned", or a person's id
+  team: string; // "all", "none", or a team's id
   overdueOnly: boolean;
 }
 
@@ -17,6 +18,7 @@ export const defaultFilters: TaskFilterState = {
   status: "all",
   priority: "all",
   assignee: "all",
+  team: "all",
   overdueOnly: false,
 };
 
@@ -42,6 +44,10 @@ export function useTaskFilters(tasks: Task[]) {
       ) {
         return false;
       }
+      if (filters.team === "none" && task.team_id !== null) return false;
+      if (filters.team !== "all" && filters.team !== "none" && task.team_id !== filters.team) {
+        return false;
+      }
       if (filters.overdueOnly && !isOverdue(task)) return false;
       return true;
     });
@@ -52,6 +58,7 @@ export function useTaskFilters(tasks: Task[]) {
     filters.status !== "all" ||
     filters.priority !== "all" ||
     filters.assignee !== "all" ||
+    filters.team !== "all" ||
     filters.overdueOnly;
 
   function setFilter<K extends keyof TaskFilterState>(

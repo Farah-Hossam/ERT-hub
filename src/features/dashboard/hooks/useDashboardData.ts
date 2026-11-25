@@ -16,10 +16,15 @@ const TEAM_ROLES = ["department_head", "operations", "leadership", "admin"];
 
 export function useDashboardData() {
   const { tasks, loading: tasksLoading, error } = useTasks();
-  const { profile, loading: profileLoading } = useCurrentUser();
+  const { profile, memberships, loading: profileLoading } = useCurrentUser();
 
+  // Managers, and anyone who leads a team, see team numbers.
+  // What they can actually see is limited by the database to their own teams.
   const scope: DashboardScope =
-    profile && TEAM_ROLES.includes(profile.role) ? "team" : "mine";
+    profile &&
+    (TEAM_ROLES.includes(profile.role) || memberships.some((m) => m.is_lead))
+      ? "team"
+      : "mine";
 
   const data = useMemo(() => {
     if (!profile) {

@@ -91,4 +91,5 @@ export interface ActiveMember {
   id: string;
   full_name: string;
   email: string | null;
+  team_ids: string[]; // the teams this person belongs to
 }

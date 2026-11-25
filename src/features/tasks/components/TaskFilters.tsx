@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { taskPriorities, taskStatuses } from "@/config/task-status";
+import type { Team } from "@/features/team/types/team.types";
 import type { TaskFilterState } from "../hooks/useTaskFilters";
 import type { TaskPriority, TaskStatus } from "../types/task.types";
 
@@ -27,6 +28,7 @@ interface TaskFiltersProps {
   reset: () => void;
   isFiltering: boolean;
   assignees: { id: string; name: string }[];
+  teams: Team[];
 }
 
 export function TaskFilters({
@@ -35,7 +37,14 @@ export function TaskFilters({
   reset,
   isFiltering,
   assignees,
+  teams,
 }: TaskFiltersProps) {
+  const teamOptions = [
+    { value: "all", label: "All teams" },
+    { value: "none", label: "No team" },
+    ...teams.map((t) => ({ value: t.id, label: t.name })),
+  ];
+
   const assigneeOptions = [
     { value: "all", label: "Everyone" },
     { value: "unassigned", label: "Unassigned" },
@@ -52,7 +61,7 @@ export function TaskFilters({
         aria-label="Search tasks"
       />
 
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
         <Select
           aria-label="Filter by status"
           options={statusOptions}
@@ -66,6 +75,12 @@ export function TaskFilters({
           onChange={(e) =>
             setFilter("priority", e.target.value as TaskPriority | "all")
           }
+        />
+        <Select
+          aria-label="Filter by team"
+          options={teamOptions}
+          value={filters.team}
+          onChange={(e) => setFilter("team", e.target.value)}
         />
         <Select
           aria-label="Filter by assignee"
