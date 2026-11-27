@@ -2,7 +2,7 @@ import Link from "next/link";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { Card } from "@/components/ui/Card";
 import type { Task } from "@/features/tasks/types/task.types";
-import { formatTaskId } from "@/features/tasks/utils";
+import { formatAssignees, formatTaskId } from "@/features/tasks/utils";
 import { cn } from "@/lib/utils";
 import { getDueLabel } from "../utils";
 
@@ -52,7 +52,7 @@ export function TaskListWidget({
                   <p className="text-xs text-muted">{formatTaskId(task.task_number)}</p>
                   <p className="truncate text-sm font-medium">{task.title}</p>
                   <p className="truncate text-xs text-muted">
-                    {task.assignee ? task.assignee.full_name || "Unnamed" : "Unassigned"}
+                    {formatAssignees(task.assignees)}
                   </p>
                 </div>
                 <div className="flex shrink-0 flex-col items-end gap-1">

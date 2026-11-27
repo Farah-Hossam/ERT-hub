@@ -2,6 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 const AUTH_PAGES = ["/login", "/forgot-password"];
+const CHANGE_PASSWORD_PATH = "/change-password";
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
@@ -29,13 +30,29 @@ export async function updateSession(request: NextRequest) {
 
   // Verifies the login token. Do not remove or move this line.
   const { data } = await supabase.auth.getClaims();
-  const loggedIn = !!data?.claims;
+  const claims = data?.claims as
+    | { user_metadata?: { must_change_password?: boolean } }
+    | undefined;
+  const loggedIn = !!claims;
+  // New accounts get a temporary password and must choose their own
+  const mustChangePassword = claims?.user_metadata?.must_change_password === true;
 
   const { pathname } = request.nextUrl;
   const onAuthPage = AUTH_PAGES.some((p) => pathname.startsWith(p));
 
-  if (!loggedIn && !onAuthPage) return redirectTo(request, supabaseResponse, "/login");
-  if (loggedIn && onAuthPage) return redirectTo(request, supabaseResponse, "/dashboard");
+  if (!loggedIn && !onAuthPage) {
+    return redirectTo(request, supabaseResponse, "/login");
+  }
+  if (loggedIn && onAuthPage) {
+    return redirectTo(
+      request,
+      supabaseResponse,
+      mustChangePassword ? CHANGE_PASSWORD_PATH : "/dashboard"
+    );
+  }
+  if (mustChangePassword && pathname !== CHANGE_PASSWORD_PATH) {
+    return redirectTo(request, supabaseResponse, CHANGE_PASSWORD_PATH);
+  }
 
   return supabaseResponse;
 }

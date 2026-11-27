@@ -46,7 +46,7 @@ export default function TasksPage() {
   const assignees = useMemo(() => {
     const byId = new Map<string, string>();
     tasks.forEach((t) => {
-      if (t.assignee) byId.set(t.assignee.id, t.assignee.full_name || "Unnamed");
+      t.assignees.forEach((a) => byId.set(a.id, a.full_name || "Unnamed"));
     });
     return [...byId]
       .map(([id, name]) => ({ id, name }))
@@ -59,6 +59,7 @@ export default function TasksPage() {
     !!profile &&
     !!selected &&
     (isAdminOrOperations(profile) ||
+      selected.assignees.some((a) => a.id === profile.id) ||
       selected.assignee_id === profile.id ||
       selected.created_by === profile.id ||
       (selected.team_id !== null &&

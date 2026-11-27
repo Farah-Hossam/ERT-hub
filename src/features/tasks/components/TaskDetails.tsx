@@ -11,7 +11,7 @@ import { ProgressBar } from "@/components/ui/ProgressBar";
 import { Select } from "@/components/ui/Select";
 import { taskStatuses } from "@/config/task-status";
 import type { Task, TaskStatus } from "../types/task.types";
-import { formatDueDate, isOverdue } from "../utils";
+import { formatAssignees, formatDueDate, isOverdue } from "../utils";
 import { TaskProgress } from "./TaskProgress";
 
 const statusOptions = Object.entries(taskStatuses).map(([value, { label }]) => ({
@@ -86,7 +86,7 @@ export function TaskDetails({ task, canEdit, onSave, onClose, canDelete, onDelet
       <div className="flex flex-col gap-2 text-sm text-muted">
         <span className="inline-flex items-center gap-2">
           <User size={16} />
-          {task.assignee ? task.assignee.full_name || "Unnamed" : "Unassigned"}
+          {formatAssignees(task.assignees)}
         </span>
         <span className="inline-flex items-center gap-2">
           <CalendarDays size={16} />

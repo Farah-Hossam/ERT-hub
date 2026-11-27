@@ -73,7 +73,10 @@ function compareByDueDate(a: Task, b: Task): number {
 // My open tasks: overdue first, then due soon, then by priority and deadline
 export function getMyTasks(tasks: Task[], userId: string, limit = 5): Task[] {
   return tasks
-    .filter((t) => t.assignee_id === userId && t.status !== "completed")
+    .filter(
+      (t) =>
+        t.assignees.some((a) => a.id === userId) && t.status !== "completed"
+    )
     .sort(
       (a, b) =>
         urgencyRank(a) - urgencyRank(b) ||

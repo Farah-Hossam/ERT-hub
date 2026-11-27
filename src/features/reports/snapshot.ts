@@ -38,7 +38,7 @@ export function buildReportSnapshot({
   );
 
   const relevant = tasks
-    .filter((t) => t.assignee_id === userId)
+    .filter((t) => t.assignees.some((a) => a.id === userId))
     .filter((t) => {
       if (t.status !== "completed") return true;
       const finished = toDateKey(new Date(t.updated_at));

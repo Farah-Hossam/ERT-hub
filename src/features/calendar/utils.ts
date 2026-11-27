@@ -3,7 +3,7 @@ import { eventTypes } from "@/config/event-types";
 import { formatEventTime } from "@/features/events/utils";
 import type { TeamEvent } from "@/features/events/types/event.types";
 import type { Task } from "@/features/tasks/types/task.types";
-import { formatTaskId, isOverdue } from "@/features/tasks/utils";
+import { formatAssignees, formatTaskId, isOverdue } from "@/features/tasks/utils";
 import { addDays, startOfWeek, toDateKey } from "@/lib/dates";
 import type { CalendarItem } from "./types/calendar.types";
 
@@ -20,7 +20,7 @@ export function buildCalendarItems(tasks: Task[], events: TeamEvent[]): Calendar
       title: `${formatTaskId(task.task_number)} ${task.title}`,
       dateKey: task.due_date,
       timeLabel: null,
-      subtitle: task.assignee ? task.assignee.full_name || "Unnamed" : "Unassigned",
+      subtitle: formatAssignees(task.assignees),
       overdue: isOverdue(task),
       done: task.status === "completed",
     });

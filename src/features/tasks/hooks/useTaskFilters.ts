@@ -36,11 +36,11 @@ export function useTaskFilters(tasks: Task[]) {
       }
       if (filters.status !== "all" && task.status !== filters.status) return false;
       if (filters.priority !== "all" && task.priority !== filters.priority) return false;
-      if (filters.assignee === "unassigned" && task.assignee_id !== null) return false;
+      if (filters.assignee === "unassigned" && task.assignees.length > 0) return false;
       if (
         filters.assignee !== "all" &&
         filters.assignee !== "unassigned" &&
-        task.assignee_id !== filters.assignee
+        !task.assignees.some((a) => a.id === filters.assignee)
       ) {
         return false;
       }
